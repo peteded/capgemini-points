@@ -2,28 +2,69 @@ import React, { useEffect, useState } from "react";
 import { fetchAllPrices } from "../api/storeApi";
 import Checkout from "./Checkout";
 import { useNavigate } from "react-router-dom";
+import { createTransaction } from "../models/transaction";
+import { addTransaction, loadTransactions } from "../transactions/transactions";
+import { calculateBuyerPoints } from "../points/points";
 
+
+const CUSTOMER_SESSION_KEY = "buyer_points_selected_customer";
 
 function Store() {
   const items = ["shirt", "pants", "shoes", "socks", "hat"];
+
+  const customers = [
+  { id: "cust_1", name: "Peter" },
+  { id: "cust_2", name: "Jain" },
+];
+
+const [customerId, setCustomerId] = useState(() => {
+  try {
+    const saved = sessionStorage.getItem(CUSTOMER_SESSION_KEY);
+    const isValid = customers.some((c) => c.id === saved);
+    return isValid ? saved : customers[0].id;
+  } catch {
+    return customers[0].id;
+  }
+});
+
+
+const customer = customers.find((c) => c.id === customerId) ?? customers[0];
+
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [prices, setPrices] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [purchaseError, setPurchaseError] = useState("");
+  const [transactions, setTransactions] = useState([]);
   const [cart, setCart] = useState([]);
 
   const navigate = useNavigate();
 const [purchasing, setPurchasing] = useState(false);
 
-// simulating submitting an order to BE
+// simulating submitting a BE order
 function submitOrder(order) {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ ok: true }), 800);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() < 0.15) {
+        reject(new Error("Payment failed. Please try again."));
+        return;
+      }
+      resolve({ ok: true });
+    }, 800);
   });
 }
 
+  // selected customer
+  useEffect(() => {
+  try {
+    sessionStorage.setItem(CUSTOMER_SESSION_KEY, customerId);
+  } catch {}
+}, [customerId]);
+
+
+
+  // price
 
   useEffect(() => {
     let isMounted = true;
@@ -62,6 +103,11 @@ function submitOrder(order) {
     });
   }
 
+  // transact
+  useEffect(() => {
+  setTransactions(loadTransactions());
+}, []);
+
   // remove sec
 
   function removeOne(itemName) {
@@ -88,33 +134,60 @@ function submitOrder(order) {
   async function handlePurchase() {
   if (cart.length === 0) return;
 
+  setPurchaseError("");
   setPurchasing(true);
 
   const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
+  const points = calculateBuyerPoints(total);
 
-  const order = {
-    id: Math.floor(Math.random() * 900000) + 100000, // fake order id
+  const txn = createTransaction({
+    customerId: customer.id,
+    customerName: customer.name,
     items: cart,
     total,
-    createdAt: new Date().toISOString(),
-  };
+    points,
+  });
 
   try {
-    await submitOrder(order);
-    clearCart();
-    navigate("/confirmation", { state: { order } });
-  } finally {
-    setPurchasing(false);
-  }
+  await submitOrder(txn);
+  const next = addTransaction(txn);
+  setTransactions(next);
+  clearCart();
+  navigate("/confirmation", { state: { order: txn } });
+} catch (err) {
+  setPurchaseError(err.message || "This order did Not go through.");
+} finally {
+  setPurchasing(false);
 }
+
+}
+
 
 
   return (
     <>
       <h1 className="text-3xl my-5">Peter&apos;s Store</h1>
+      <label style={{ display: "block", marginBottom: 12 }}>
+        Customer{" "}
+        <select value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+          {customers.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
 
       {loading && <p>Loading prices...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {purchaseError && (
+        <p style={{ color: "red", marginBottom: 8 }}>
+          {purchaseError}
+        </p>
+      )}
+
 
       {!loading && !error && (
         <div
@@ -147,14 +220,17 @@ function submitOrder(order) {
           </div>
 
           <Checkout
-            cart={cart}
-            onAdd={addToCart}
-            onRemoveOne={removeOne}
-            onRemoveItem={removeItem}
-            onClear={clearCart}
-            onPurchase={handlePurchase}
-            purchasing={purchasing}
-          />
+          cart={cart}
+          onAdd={addToCart}
+          onRemoveOne={removeOne}
+          onRemoveItem={removeItem}
+          onClear={clearCart}
+          onPurchase={handlePurchase}
+          purchasing={purchasing}
+          customer={customer}
+          transactions={transactions}
+        />
+
         </div>
       )}
     </>
