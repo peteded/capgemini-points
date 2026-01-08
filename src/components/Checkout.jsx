@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear }) {
+function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase, purchasing }) {
   const total = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.qty * item.price, 0);
   }, [cart]);
@@ -92,6 +92,15 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear }) {
           >
             Remove all items
           </button>
+
+         <button type="button"
+            onClick={onPurchase}
+            disabled={cart.length === 0 || purchasing}
+            style={{ marginTop: 10, width: "100%" }}
+            >
+            {purchasing ? "Processing..." : "Purchase"}
+        </button>
+ 
         </>
       )}
     </div>

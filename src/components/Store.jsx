@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchAllPrices } from "../api/storeApi";
 import Checkout from "./Checkout";
+import { useNavigate } from "react-router-dom";
+
 
 function Store() {
   const items = ["shirt", "pants", "shoes", "socks", "hat"];
@@ -10,7 +12,18 @@ function Store() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [cart, setCart] = useState([]); // [{ name, qty, price }]
+  const [cart, setCart] = useState([]);
+
+  const navigate = useNavigate();
+const [purchasing, setPurchasing] = useState(false);
+
+// simulating submitting an order to BE
+function submitOrder(order) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ ok: true }), 800);
+  });
+}
+
 
   useEffect(() => {
     let isMounted = true;
@@ -49,6 +62,8 @@ function Store() {
     });
   }
 
+  // remove sec
+
   function removeOne(itemName) {
     setCart((prev) =>
       prev
@@ -69,6 +84,30 @@ function Store() {
     setSelectedIndex(index);
     addToCart(item);
   }
+
+  async function handlePurchase() {
+  if (cart.length === 0) return;
+
+  setPurchasing(true);
+
+  const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
+
+  const order = {
+    id: Math.floor(Math.random() * 900000) + 100000, // fake order id
+    items: cart,
+    total,
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    await submitOrder(order);
+    clearCart();
+    navigate("/confirmation", { state: { order } });
+  } finally {
+    setPurchasing(false);
+  }
+}
+
 
   return (
     <>
@@ -113,6 +152,8 @@ function Store() {
             onRemoveOne={removeOne}
             onRemoveItem={removeItem}
             onClear={clearCart}
+            onPurchase={handlePurchase}
+            purchasing={purchasing}
           />
         </div>
       )}
