@@ -8,6 +8,8 @@ export function fetchAllPrices() {
         return;
       }
 
+      // price sec
+
       resolve({
         shirt: 20.0,
         pants: 40.0,

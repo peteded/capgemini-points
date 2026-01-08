@@ -1,21 +1,20 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import Store from './components/Store';
-import './App.css';
+import { Routes, Route, Navigate } from "react-router-dom";
+import Store from "./components/Store";
+import Confirmation from "./components/Confirmation";
+import "./App.css";
 
 function App() {
-  // functions and const
-
   return (
-    <>
-    <div className='bg-teal-100'>
-    <main className='w-[1200px] max-w-full m-auto p-5'>
-      <Store />
-    </main>
-    </div>  
-    </>
-  )
+    <div className="bg-teal-100">
+      <main className="w-[1200px] max-w-full m-auto p-5">
+        <Routes>
+          <Route path="/" element={<Store />} />
+          <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;

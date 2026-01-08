@@ -1,9 +1,18 @@
 import React, { useMemo } from "react";
+import { calculateBuyerPoints } from "../points/points";
+import { totalPoints3months } from "../points/totalPoints";
 
-function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear }) {
+
+function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase, purchasing, customer, transactions }) {
   const total = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.qty * item.price, 0);
   }, [cart]);
+
+  const cartPoints = calculateBuyerPoints(total);
+
+    const { filtered, months, monthKeys, totalPoints } =
+  totalPoints3months(transactions || [], customer?.id);
+
 
   return (
     <div
@@ -85,6 +94,13 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear }) {
             <strong>${total.toFixed(2)}</strong>
           </div>
 
+          <div style={{ marginTop: 6, display: "flex", justifyContent: "space-between" }}>
+            <strong>New Points</strong>
+            <strong>{cartPoints}</strong>
+            </div>
+
+
+
           <button
             type="button"
             onClick={onClear}
@@ -92,6 +108,55 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear }) {
           >
             Remove all items
           </button>
+
+         <button type="button"
+            onClick={onPurchase}
+            disabled={cart.length === 0 || purchasing}
+            style={{ marginTop: 10, width: "100%" }}
+            >
+            {purchasing ? "Processing..." : "purchase!"}
+        </button>
+
+        <hr style={{ margin: "16px 0" }} />
+
+<h3 style={{ margin: "0 0 8px" }}>
+  Points (last 3 months){customer?.name ? `: ${customer.name}` : ""}
+</h3>
+
+{filtered.length === 0 ? (
+  <p style={{ margin: 0 }}>No transactions in the last 3 months.</p>
+) : (
+  <>
+    <div style={{ marginBottom: 10 }}>
+      <strong>Total points:</strong> {totalPoints}
+    </div>
+
+    <div style={{ marginBottom: 10 }}>
+      <strong>Points per month:</strong>
+      <ul style={{ margin: "6px 0 0 18px" }}>
+        {monthKeys.map((m) => (
+          <li key={m}>
+            {m}: {months[m]} pts
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <details>
+      <summary>View transactions</summary>
+      <ul style={{ margin: "8px 0 0 18px" }}>
+        {filtered.map((t) => (
+          <li key={t.id}>
+            {new Date(t.createdAt).toLocaleDateString()} — $
+            {t.total.toFixed(2)} — {t.points} pts
+          </li>
+        ))}
+      </ul>
+    </details>
+  </>
+)}
+
+ 
         </>
       )}
     </div>
