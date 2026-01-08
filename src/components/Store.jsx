@@ -5,12 +5,25 @@ import { useNavigate } from "react-router-dom";
 import { createTransaction } from "../models/transaction";
 import { addTransaction, loadTransactions } from "../transactions/transactions";
 import { calculateBuyerPoints } from "../points/points";
+import shirtImg from "../assets/products/shirt.jpg";
+import pantsImg from "../assets/products/pants.jpg";
+import shoesImg from "../assets/products/shoes.jpg";
+import socksImg from "../assets/products/socks.jpg";
+import hatImg from "../assets/products/hat.jpg";
+
 
 
 const CUSTOMER_SESSION_KEY = "buyer_points_selected_customer";
 
 function Store() {
-  const items = ["shirt", "pants", "shoes", "socks", "hat"];
+  const items = [
+  { id: "shirt", label: "Shirt", image: shirtImg },
+  { id: "pants", label: "Pants", image: pantsImg },
+  { id: "shoes", label: "Shoes", image: shoesImg },
+  { id: "socks", label: "Socks", image: socksImg },
+  { id: "hat", label: "Hat", image: hatImg },
+];
+
 
   const customers = [
   { id: "cust_1", name: "Peter" },
@@ -126,10 +139,10 @@ function submitOrder(order) {
     setCart([]);
   }
 
-  function handleItemClick(item, index) {
-    setSelectedIndex(index);
-    addToCart(item);
-  }
+  function handleItemClick(itemId, index) {
+  setSelectedIndex(index);
+  addToCart(itemId);
+}
 
   async function handlePurchase() {
   if (cart.length === 0) return;
@@ -167,7 +180,7 @@ function submitOrder(order) {
   return (
     <>
     <div className="row">
-      <div className="col-md-9 col-sm-12 col-xs-12 w-xs-100">
+      <div className="col-lg-8 col-md-6 col-sm-12 col-xs-12 w-xs-100">
       <h1 className="text-3xl my-5">Peter Apparel Store</h1>
       <label style={{ display: "block", marginBottom: 12 }}>
         Select a Customer{" "}
@@ -199,34 +212,50 @@ function submitOrder(order) {
             gap: 16,
           }}
         >
-          <div className="list-group list-group-horizontal-md">
-            {items.map((item, index) => (
-              <button
-                key={item}
-                type="button"
-                className={
-                  selectedIndex === index
-                    ? "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-secondary text-uppercase active"
-                    : "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-primary text-capitalize"
-                }
-                onClick={() => handleItemClick(item, index)}
-              >
-                {item}
-                {prices[item] != null && (
-                  <span style={{ float: "right" }}>
-                    ${prices[item].toFixed(2)}
-                  </span>
-                )}
-              </button>
-            ))}
+          <div className="list-group list-group-horizontal-lg">
+  {items.map((item, index) => (
+    <button
+      key={item.id}
+      type="button"
+      className={
+        selectedIndex === index
+          ? "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-primary active"
+          : "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-secondary"
+      }
+      onClick={() => handleItemClick(item.id, index)}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <img
+          src={item.image}
+          alt={item.label}
+          width={48}
+          height={48}
+          style={{ objectFit: "contain" }}
+        />
+
+        <div style={{ flexGrow: 1, textAlign: "left" }}>
+          <div className="text-capitalize fw-semibold">
+            {item.label}
           </div>
+
+          {prices[item.id] != null && (
+            <div className="text-muted small">
+              ${prices[item.id].toFixed(2)}
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  ))}
+</div>
+
 
           
 
         </div>
       )}
       </div>
-      <div className="col-md-3 col-sm-12 col-xs-12">
+      <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
         <Checkout
           cart={cart}
           onAdd={addToCart}
