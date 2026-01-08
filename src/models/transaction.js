@@ -1,7 +1,7 @@
 /**
  * Transaction model
  *
- * Represents a completed purchase.
+ * Represents a completed purchase
  *
  * @typedef {Object} Transaction
  * @property {string} id
@@ -14,8 +14,8 @@
  */
 
 /**
- * Factory function to create a transaction
- * (keeps transaction creation consistent everywhere)
+ * create a transaction
+ * (keeps transaction creation consistent)
  */
 export function createTransaction({
   customerId,

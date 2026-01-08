@@ -7,7 +7,7 @@
  */
 
 /**
- * Simple customer factory
+ * Simple customer
  */
 export function createCustomer(id, name) {
   return { id, name };
