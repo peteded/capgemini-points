@@ -52,6 +52,7 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <button
                     type="button"
+                    className="btn btn-secondary rounded"
                     onClick={() => onRemoveOne(item.name)}
                     aria-label={`Remove one ${item.name}`}
                   >
@@ -64,6 +65,7 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
 
                   <button
                     type="button"
+                    className="btn btn-secondary rounded"
                     onClick={() => onAdd(item.name)}
                     aria-label={`Add one ${item.name}`}
                   >
@@ -72,6 +74,7 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
 
                   <button
                     type="button"
+                    className="btn btn-danger rounded"
                     onClick={() => onRemoveItem(item.name)}
                     aria-label={`Remove ${item.name} from cart`}
                     style={{ marginLeft: 6 }}
@@ -103,6 +106,7 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
 
           <button
             type="button"
+            className="btn btn-danger rounded"
             onClick={onClear}
             style={{ marginTop: 12, width: "100%" }}
           >
@@ -111,10 +115,11 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
 
          <button type="button"
             onClick={onPurchase}
+            className="btn btn-success rounded"
             disabled={cart.length === 0 || purchasing}
             style={{ marginTop: 10, width: "100%" }}
             >
-            {purchasing ? "Processing..." : "purchase!"}
+            {purchasing ? "Processing..." : "Purchase!"}
         </button>
 
         <hr style={{ margin: "16px 0" }} />

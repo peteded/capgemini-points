@@ -31,7 +31,7 @@ const customerName = order.customerName;
       <h1 className="text-3xl my-5">Order Confirmed</h1>
 
       <p className="mb-4">
-        Thanks for your purchase! Your order has been successfully placed.
+        Thank you! Your purchase has been successfully placed.
       </p>
 
       <div className="mb-4">

@@ -5,7 +5,7 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="bg-teal-100">
+    <div className="">
       <main className="w-[1200px] max-w-full m-auto p-5">
         <Routes>
           <Route path="/" element={<Store />} />
