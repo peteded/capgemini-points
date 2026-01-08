@@ -166,9 +166,11 @@ function submitOrder(order) {
 
   return (
     <>
-      <h1 className="text-3xl my-5">Peter&apos;s Store</h1>
+    <div className="row">
+      <div className="col-md-9 col-sm-12 col-xs-12 w-xs-100">
+      <h1 className="text-3xl my-5">Peter Apparel Store</h1>
       <label style={{ display: "block", marginBottom: 12 }}>
-        Customer{" "}
+        Select a Customer{" "}
         <select value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
           {customers.map((c) => (
             <option key={c.id} value={c.id}>
@@ -197,15 +199,15 @@ function submitOrder(order) {
             gap: 16,
           }}
         >
-          <div className="list-group">
+          <div className="list-group list-group-horizontal-md">
             {items.map((item, index) => (
               <button
                 key={item}
                 type="button"
                 className={
                   selectedIndex === index
-                    ? "list-group-item list-group-item-action active"
-                    : "list-group-item list-group-item-action"
+                    ? "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-secondary text-uppercase active"
+                    : "list-group-item list-group-item-action py-3 my-sm-1 my-xs-1 px-3 rounded mx-1 border border-primary text-capitalize"
                 }
                 onClick={() => handleItemClick(item, index)}
               >
@@ -219,7 +221,13 @@ function submitOrder(order) {
             ))}
           </div>
 
-          <Checkout
+          
+
+        </div>
+      )}
+      </div>
+      <div className="col-md-3 col-sm-12 col-xs-12">
+        <Checkout
           cart={cart}
           onAdd={addToCart}
           onRemoveOne={removeOne}
@@ -230,9 +238,8 @@ function submitOrder(order) {
           customer={customer}
           transactions={transactions}
         />
-
-        </div>
-      )}
+      </div>
+      </div>
     </>
   );
 }
