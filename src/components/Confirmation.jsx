@@ -42,7 +42,7 @@ const customerName = order.customerName;
       <ul className="mb-4">
         {order.items.map((item) => (
           <li key={item.name}>
-            {item.qty} × {item.name} — $
+            {item.qty} × {item.name} - $
             {(item.qty * item.price).toFixed(2)}
           </li>
         ))}
