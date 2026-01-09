@@ -27,7 +27,7 @@ function Store() {
 
   const customers = [
   { id: "cust_1", name: "Peter" },
-  { id: "cust_2", name: "Jain" },
+  { id: "cust_2", name: "Kirti" },
 ];
 
 const [customerId, setCustomerId] = useState(() => {
