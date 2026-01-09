@@ -93,8 +93,8 @@ const customerName = order.customerName;
       <ul style={{ margin: "8px 0 0 18px" }}>
         {filtered.map((t) => (
           <li key={t.id}>
-            {new Date(t.createdAt).toLocaleDateString()} — $
-            {t.total.toFixed(2)} — {t.points} pts
+            {new Date(t.createdAt).toLocaleDateString()} - $
+            {t.total.toFixed(2)} - {t.points} pts
           </li>
         ))}
       </ul>
