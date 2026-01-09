@@ -148,7 +148,7 @@ function Checkout({ cart, onAdd, onRemoveOne, onRemoveItem, onClear, onPurchase,
     </div>
 
     <details>
-      <summary>View transactions</summary>
+      <summary>View Past Purchases</summary>
       <ul style={{ margin: "8px 0 0 18px" }}>
         {filtered.map((t) => (
           <li key={t.id}>
