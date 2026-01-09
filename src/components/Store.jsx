@@ -80,27 +80,40 @@ function submitOrder(order) {
   // price
 
   useEffect(() => {
-    let isMounted = true;
+  let isMounted = true;
 
-    async function loadPrices() {
-      try {
-        const data = await fetchAllPrices();
-        if (!isMounted) return;
-        setPrices(data);
-      } catch (err) {
-        if (!isMounted) return;
-        setError(err.message || "Oops I done goofed.");
-      } finally {
-        if (!isMounted) return;
-        setLoading(false);
+  async function loadPrices(retries = 3, delayMs = 600) {
+    try {
+      if (!isMounted) return;
+      setLoading(true);
+      setError("");
+
+      const data = await fetchAllPrices();
+      if (!isMounted) return;
+      setPrices(data);
+    } catch (err) {
+      if (!isMounted) return;
+
+      if (retries > 1) {
+        await new Promise((res) => setTimeout(res, delayMs));
+        return loadPrices(retries - 1, delayMs);
       }
-    }
 
-    loadPrices();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+      setError(err.message || "Failed to load prices.");
+    } finally {
+      if (!isMounted) return;
+      setLoading(false);
+    }
+  }
+
+  loadPrices();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
+
 
   function addToCart(itemName) {
     const itemPrice = prices[itemName] ?? 0;
